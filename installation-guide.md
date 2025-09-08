@@ -5,14 +5,15 @@
 ### System Requirements
 - **macOS** (latest version recommended)
 - **Homebrew** installed (`/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`)
-- **Terminal**: Warp (you're already using this ✅)
-- **Git Client**: GitKraken (you're already using this ✅)
+- **Terminal**: Anything that suits your needs / prefrences
+- **Git Client**
 
 ### API Keys Required
 Before starting, obtain API keys from:
 1. **Anthropic** (Claude): https://console.anthropic.com/ 
-2. **Perplexity**: https://www.perplexity.ai/settings/api (you have Pro ✅)
+2. **Perplexity**: https://www.perplexity.ai/settings/api
 3. **OpenAI** (optional): https://platform.openai.com/api-keys
+4. **BraveSearchAPI** (optional): https://api-dashboard.search.brave.com/app/keys
 
 ## Step-by-Step Installation
 
@@ -231,19 +232,38 @@ Detected by `pom.xml` or `build.gradle`.
 
 ### Claude (Primary - Recommended)
 **Best for**: Complex reasoning, code refactoring, architectural decisions
+Models: https://docs.anthropic.com/en/docs/about-claude/models/overview
 
 Configuration in `ai-core.lua`:
 ```lua
 claude = {
   endpoint = 'https://api.anthropic.com',
-  model = 'claude-3-5-sonnet-20241022',
+  model = 'claude-sonnet-4-20250514',
   temperature = 0,
   max_tokens = 4096,
 }
 ```
 
+### OPENAI
+**Best for**: Coding, reasoning, and agentic tasks across domains
+Models: https://platform.openai.com/docs/models
+
+Configuration:
+```lua
+openai = {
+  endpoint = 'https://api.openai.com/v1',
+  model = 'gpt-5-2025-08-07',
+  extra_request_body = {
+    temperature = 0.1,
+    max_tokens = 8192,
+  },
+}
+```
+
+
 ### Perplexity (Fallback - Cost Effective)
 **Best for**: Quick questions, research, documentation
+**Models**: https://docs.perplexity.ai/getting-started/models
 
 Configuration:
 ```lua
@@ -251,7 +271,7 @@ perplexity = {
   api_key = os.getenv('PERPLEXITY_API_KEY'),
   endpoint = 'https://api.perplexity.ai/chat/completions',
   topic = {
-    model = 'llama-3.1-sonar-large-128k-online',
+    model = 'sonar-pro',
   },
 }
 ```

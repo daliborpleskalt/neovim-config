@@ -57,7 +57,7 @@ return {
         },
         openai = {
           endpoint = 'https://api.openai.com/v1',
-          model = 'gpt-5',
+          model = 'gpt-5-2025-08-07',
           extra_request_body = {
             temperature = 0.1,
             max_tokens = 8192,
@@ -199,20 +199,20 @@ return {
             anthropic = function()
               return require('codecompanion.adapters').extend('anthropic', {
                 env = { api_key = 'ANTHROPIC_API_KEY' },
-                schema = { model = { default = 'claude-3-5-sonnet-20241022' } },
+                schema = { model = { default = 'claude-sonnet-4-20250514' } },
               })
             end,
             openai = function()
               return require('codecompanion.adapters').extend('openai', {
                 env = { api_key = 'OPENAI_API_KEY' },
-                schema = { model = { default = 'gpt-4o' } },
+                schema = { model = { default = 'gpt-5-2025-08-07' } },
               })
             end,
             perplexity = function()
               return require('codecompanion.adapters').extend('openai', {
                 env = { api_key = 'PERPLEXITY_API_KEY' },
                 url = 'https://api.perplexity.ai/chat/completions',
-                schema = { model = { default = 'llama-3.1-sonar-large-128k-online' } },
+                schema = { model = { default = 'sonar-pro' } },
               })
             end,
           },
@@ -232,13 +232,13 @@ return {
             name = 'anthropic',
             api_key = os.getenv('ANTHROPIC_API_KEY'),
             endpoint = 'https://api.anthropic.com/v1/messages',
-            model = 'claude-3-5-sonnet-20241022',
+            model = 'claude-sonnet-4-20250514',
             topic = {
-              model = 'claude-3-5-sonnet-20241022',
+              model = 'claude-sonnet-4-20250514',
               params = { max_tokens = 8192, temperature = 0.7 },
             },
             command = {
-              model = 'claude-3-5-sonnet-20241022',
+              model = 'claude-sonnet-4-20250514',
               params = { max_tokens = 8192, temperature = 0.1 },
             },
           },
@@ -246,13 +246,13 @@ return {
             name = 'openai',
             api_key = os.getenv('OPENAI_API_KEY'),
             endpoint = 'https://api.openai.com/v1',
-            model = 'gpt-4o',
+            model = 'gpt-5-2025-08-07',
             topic = {
-              model = 'gpt-4o',
+              model = 'gpt-5-2025-08-07',
               params = { max_tokens = 8192, temperature = 0.7 },
             },
             command = {
-              model = 'gpt-4o',
+              model = 'gpt-5-2025-08-07',
               params = { max_tokens = 8192, temperature = 0.1 },
             },
           },
@@ -260,13 +260,13 @@ return {
             name = 'perplexity',
             api_key = os.getenv('PERPLEXITY_API_KEY'),
             endpoint = 'https://api.perplexity.ai/chat/completions',
-            model = 'llama-3.1-sonar-large-128k-online',
+            model = 'sonar-pro',
             topic = {
-              model = 'llama-3.1-sonar-large-128k-online',
+              model = 'sonar-pro',
               params = { max_tokens = 8192, temperature = 0.2 },
             },
             command = {
-              model = 'llama-3.1-sonar-small-128k-online',
+              model = 'sonar-pro',
               params = { max_tokens = 4096, temperature = 0.1 },
             },
           },

@@ -1,6 +1,6 @@
-# Ultimate AI-Powered Neovim Setup
+# AI-Powered Neovim Setup
 
-A laser-focused, performance-optimized Neovim configuration with cutting-edge AI integration for senior developers.
+A laser-focused, performance-optimized Neovim configuration with cutting-edge AI integration.
 
 ## Features
 
