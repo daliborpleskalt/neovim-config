@@ -11,6 +11,7 @@ require('config.options')
 require('config.keymaps')
 require('config.lazy')
 require('config.security')
+require('config.ai-providers').init()
 
 -- Performance optimization
 vim.opt.updatetime = 100
