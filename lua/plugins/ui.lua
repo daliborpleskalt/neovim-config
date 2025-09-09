@@ -34,59 +34,6 @@ return {
     end,
   },
 
-  -- Which-key - SAFE, compatible configuration
-  {
-    'folke/which-key.nvim',
-    event = 'VeryLazy',
-    init = function()
-      vim.o.timeout = true
-      vim.o.timeoutlen = 300
-    end,
-    config = function()
-      local wk = require('which-key')
-
-      -- SAFE SETUP - minimal configuration to avoid errors
-      wk.setup({
-        preset = 'classic', -- Use classic preset for compatibility
-
-        win = {
-          border = 'rounded',
-          position = 'bottom',
-        },
-
-        plugins = {
-          marks = true,
-          registers = true,
-          spelling = {
-            enabled = true,
-            suggestions = 20,
-          },
-          presets = {
-            operators = false, -- Disabled to prevent conflicts
-            motions = true,
-            text_objects = true,
-            windows = true,
-            nav = true,
-            z = true,
-            g = true,
-          },
-        },
-      })
-
-      -- SAFE MAPPING REGISTRATION with error handling
-      pcall(function()
-        wk.add({
-          { '<leader>f', group = 'Find' },
-          { '<leader>l', group = 'LSP' },
-          { '<leader>b', group = 'Buffers' },
-          { '<leader>a', group = 'AI (Avante)' },
-          { '<leader>c', group = 'AI Chat' },
-          { '<leader>p', group = 'AI (Parrot)' },
-        })
-      end)
-    end,
-  },
-
   -- Indent guides
   {
     'lukas-reineke/indent-blankline.nvim',
