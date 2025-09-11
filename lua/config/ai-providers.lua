@@ -2,88 +2,76 @@
 -- Centralized AI provider configurations with validation
 
 local M = {}
+local security = require("config.security")
 
 -- Common model configurations
 local MODELS = {
   claude = "claude-sonnet-4-20250514",
   openai = "gpt-5-2025-08-07",
+  gemini = "gemini-2.5-flash",
   perplexity = "sonar-pro",
 }
-
--- API key validation with user-friendly messages
-local function get_api_key(key_name)
-  local key = os.getenv(key_name)
-  if not key or key == "" then
-    vim.notify(
-      string.format("⚠️  Missing API key: %s\nPlease set it in your environment variables.", key_name),
-      vim.log.levels.WARN,
-      { title = "AI Configuration" }
-    )
-    return nil
-  end
-  return key
-end
-
--- Security and rate limiting helper
-local function create_security_config()
-  return {
-    rate_limit = {
-      anthropic = { requests_per_hour = 50 },
-      openai = { requests_per_hour = 100 },
-      perplexity = { requests_per_hour = 200 },
-    },
-    audit = {
-      enabled = true,
-      log_file = vim.fn.stdpath("data") .. "/ai_audit.log",
-    },
-  }
-end
 
 -- Avante.nvim configuration
 function M.get_avante_config()
   return {
-    provider = "claude",
-    auto_suggestions_provider = "claude",
+    mode = "legacy",
+    provider = "openai",
 
     providers = {
-      claude = {
-        endpoint = "https://api.anthropic.com",
-        model = MODELS.claude,
-        api_key_name = "ANTHROPIC_API_KEY",
-        extra_request_body = {
-          temperature = 0,
-          max_tokens = 8192,
-        },
-      },
       openai = {
-        endpoint = "https://api.openai.com/v1",
-        model = MODELS.openai,
-        api_key_name = "OPENAI_API_KEY",
+        provider = "gpt-5", -- Use GPT-5 for best cost-performance balance
+        api_key = "YOUR_OPENAI_API_KEY",
         extra_request_body = {
-          temperature = 0.1,
-          max_tokens = 8192,
+          max_tokens = 2048, -- Limit max tokens
+          temperature = 0,   -- Lower temp for focused answers
         },
       },
-      perplexity = {
-        __inherited_from = "openai",
-        api_key_name = "PERPLEXITY_API_KEY",
-        endpoint = "https://api.perplexity.ai/chat/completions",
-        model = MODELS.perplexity,
+      anthropic = {
+        provider = "claude-sonnet-4",
+        api_key = "YOUR_CLAUDE_API_KEY",
         extra_request_body = {
-          temperature = 0.2,
-          max_tokens = 8192,
+          max_tokens = 2048,
+          temperature = 0.5,
         },
       },
+      google = {
+        provider = "gemini-2.5-pro",
+        api_key = "YOUR_GOOGLE_API_KEY",
+        extra_request_body = {
+          max_tokens = 2048,
+          temperature = 0.5,
+        },
+      }
     },
 
-    -- Buffer settings (fixes modifiable issues)
     behaviour = {
-      auto_suggestions = false,
-      auto_set_highlight_group = true,
-      auto_set_keymaps = false, -- We handle keymaps manually
-      auto_apply_diff_after_generation = false,
-      support_paste_from_clipboard = false,
-      auto_focus_sidebar = false,
+      auto_suggestions = false,                 -- Disable auto-suggestions to lower token usage
+      enable_token_counting = true,             -- Enable token counting for monitoring
+      auto_apply_diff_after_generation = false, -- Prefer manual application of generated code
+    },
+
+    dual_boost = {
+      enabled = false, -- Disable dual boost to avoid tripling token usage
+    },
+
+    rag_service = {
+      enabled = false, -- Disable retrieval service unless necessary
+    },
+
+    file = {
+      -- Use selective file inclusion to avoid scanning entire codebase
+      inclusion_patterns = { "**/*.ts", "**/*.js", "**/*.lua", "**/*.json" },
+      exclusion_patterns = { "**/*.md", "**/*.png", "**/*.jpg", "**/*.mp4" }, -- Skip non-code binary or doc files
+    },
+
+    suggestion = {
+      debounce = 1200, -- Increase debounce delay to reduce request frequency
+      throttle = 1200, -- Increase throttle time to reduce request frequency
+    },
+
+    prompt_logger = {
+      enabled = true, -- Log prompts for cost analysis and usage review
     },
 
     windows = {
@@ -137,7 +125,7 @@ function M.get_avante_config()
     },
 
     -- Security configuration
-    security = create_security_config(),
+    security = security.get_security_config(),
   }
 end
 
@@ -203,7 +191,7 @@ function M.get_codecompanion_config()
     },
 
     -- Security configuration
-    security = create_security_config(),
+    security = security.get_security_config(),
   }
 end
 
@@ -213,7 +201,7 @@ function M.get_parrot_config()
     providers = {
       anthropic = {
         name = "anthropic",
-        api_key = get_api_key("ANTHROPIC_API_KEY"),
+        api_key = os.getenv("ANTHROPIC_API_KEY"),
         endpoint = "https://api.anthropic.com/v1/messages",
         model = MODELS.claude,
         topic = {
@@ -228,7 +216,7 @@ function M.get_parrot_config()
 
       openai = {
         name = "openai",
-        api_key = get_api_key("OPENAI_API_KEY"),
+        api_key = os.getenv("OPENAI_API_KEY"),
         endpoint = "https://api.openai.com/v1",
         model = MODELS.openai,
         topic = {
@@ -243,7 +231,7 @@ function M.get_parrot_config()
 
       perplexity = {
         name = "perplexity",
-        api_key = get_api_key("PERPLEXITY_API_KEY"),
+        api_key = os.getenv("PERPLEXITY_API_KEY"),
         endpoint = "https://api.perplexity.ai/chat/completions",
         model = MODELS.perplexity,
         topic = {
@@ -271,57 +259,11 @@ function M.get_parrot_config()
     },
 
     -- Security configuration
-    security = create_security_config(),
+    security = security.get_security_config(),
   }
 end
 
 -- Utility functions for AI management
-
--- Check if all API keys are configured
-function M.validate_api_keys()
-  local required_keys = {
-    "ANTHROPIC_API_KEY",
-    "OPENAI_API_KEY",
-    "PERPLEXITY_API_KEY"
-  }
-
-  local missing_keys = {}
-  local valid_keys = {}
-
-  for _, key in ipairs(required_keys) do
-    if get_api_key(key) then
-      table.insert(valid_keys, key)
-    else
-      table.insert(missing_keys, key)
-    end
-  end
-
-  local status = {}
-  table.insert(status, "🔑 API Key Status:")
-  table.insert(status, "")
-
-  for _, key in ipairs(valid_keys) do
-    table.insert(status, "✅ " .. key .. ": Configured")
-  end
-
-  for _, key in ipairs(missing_keys) do
-    table.insert(status, "❌ " .. key .. ": Missing")
-  end
-
-  if #missing_keys > 0 then
-    table.insert(status, "")
-    table.insert(status, "💡 Set missing keys in your environment variables:")
-    table.insert(status, "   export API_KEY_NAME=\"your-key-here\"")
-  end
-
-  vim.notify(
-    table.concat(status, "\n"),
-    #missing_keys > 0 and vim.log.levels.WARN or vim.log.levels.INFO,
-    { title = "AI Configuration" }
-  )
-
-  return #missing_keys == 0
-end
 
 -- Get current model configurations
 function M.get_models()
@@ -340,16 +282,7 @@ end
 
 -- Initialize AI providers (called during setup)
 function M.init()
-  -- Validate API keys on startup
-  vim.defer_fn(function()
-    M.validate_api_keys()
-  end, 1000)
-
-  -- Create user commands for AI management
-  vim.api.nvim_create_user_command("AIStatus", function()
-    M.validate_api_keys()
-  end, { desc = "Check AI provider status" })
-
+  -- Create user command for viewing AI models
   vim.api.nvim_create_user_command("AIModels", function()
     local models = M.get_models()
     local status = { "🤖 Current AI Models:" }
@@ -361,4 +294,3 @@ function M.init()
 end
 
 return M
-
