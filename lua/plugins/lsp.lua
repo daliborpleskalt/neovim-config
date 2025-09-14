@@ -42,12 +42,80 @@ return {
     },
     config = function()
       local lspconfig = require('lspconfig')
+      local cmp = require('cmp');
       local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+      -- Configure cmp to apply suggestions only on TAB
+      cmp.setup({
+        mapping = {
+          ['<Tab>'] = cmp.mapping.confirm({ select = true }),
+        },
+      })
 
       local on_attach = function(client, bufnr)
         -- Enable native LSP completion for Neovim 0.11+
         if client.supports_method('textDocument/completion') then
-          vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = true })
+         vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
+        end
+
+          -- Enhanced keymaps for auto imports
+        local opts = { buffer = bufnr, silent = true }
+        
+        -- Existing keymaps
+        vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+        vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+        vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+        vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+        
+        -- Auto import keymaps
+        vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+        vim.keymap.set('n', '<leader>ai', function()
+          vim.lsp.buf.code_action({
+            apply = true,
+            context = {
+              only = { 'source.addMissingImports.ts', 'source.addMissingImports' },
+              diagnostics = {}
+            }
+          })
+        end, { desc = 'Add missing imports', buffer = bufnr })
+        
+        vim.keymap.set('n', '<leader>oi', function()
+          vim.lsp.buf.code_action({
+            apply = true,
+            context = {
+              only = { 'source.organizeImports.ts', 'source.organizeImports' },
+              diagnostics = {}
+            }
+          })
+        end, { desc = 'Organize imports', buffer = bufnr })
+
+        -- Auto-organize imports and add missing imports on save
+        if client.supports_method('textDocument/codeAction') then
+          vim.api.nvim_create_autocmd('BufWritePre', {
+            group = vim.api.nvim_create_augroup('AutoImports', { clear = true }),
+            buffer = bufnr,
+            callback = function()
+              -- Add missing imports first
+              vim.lsp.buf.code_action({
+                apply = true,
+                context = {
+                  only = { 'source.addMissingImports.ts', 'source.addMissingImports' },
+                  diagnostics = {}
+                }
+              })
+              
+              -- Then organize imports
+              vim.defer_fn(function()
+                vim.lsp.buf.code_action({
+                  apply = true,
+                  context = {
+                    only = { 'source.organizeImports.ts', 'source.organizeImports' },
+                    diagnostics = {}
+                  }
+                })
+              end, 100)
+            end,
+          })
         end
 
         -- Format on save
@@ -62,20 +130,42 @@ return {
         end
       end
 
+      -- Angular
+      lspconfig.angularls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+        root_dir = lspconfig.util.root_pattern('angular.json', 'nx.json', 'project.json'),
+        filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx' },
+      })
+
       -- TypeScript/JavaScript - UPDATED: ts_ls instead of tsserver
       lspconfig.ts_ls.setup({
-        on_attach = on_attach,
+        on_attach = function(client, bufnr)
+          on_attach(client, bufnr)
+        end,
         capabilities = capabilities,
         root_dir = lspconfig.util.root_pattern('package.json', 'tsconfig.json', 'nx.json'),
         settings = {
-          typescript = {
-            inlayHints = {
+          ['typescript'] = {
+            inlayHints = { includeInlayParameterNameHints = 'all' },
+            preferences = {
+              importModuleSpecifierPreference = 'relative',
               includeInlayParameterNameHints = 'all',
               includeInlayFunctionParameterTypeHints = true,
               includeInlayVariableTypeHints = true,
+              -- Automatic import suggestions
+              includeCompletionsForImportStatements = true,
             },
           },
-          javascript = {
+          ['typescript.tsserver'] = {
+            codeActionsOnSave = {
+              source = {
+                organizeImports = true,
+                addMissingImports = true,
+              },
+            },
+          },
+          ['javascript'] = {
             inlayHints = {
               includeInlayParameterNameHints = 'all',
               includeInlayFunctionParameterTypeHints = true,
@@ -85,14 +175,6 @@ return {
         },
       })
 
-      -- Angular
-      lspconfig.angularls.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-        root_dir = lspconfig.util.root_pattern('angular.json', 'nx.json', 'project.json'),
-        filetypes = { 'typescript', 'html', 'typescriptreact', 'typescript.tsx' },
-      })
-
       -- Rust
       lspconfig.rust_analyzer.setup({
         on_attach = on_attach,
@@ -100,7 +182,7 @@ return {
         settings = {
           ['rust-analyzer'] = {
             diagnostics = { enable = true },
-            cargo = { 
+            cargo = {
               allFeatures = true,
               loadOutDirsFromCheck = true,
             },
@@ -134,6 +216,35 @@ return {
         },
       })
 
+      -- Configure diagnostics
+      vim.diagnostic.config({
+        virtual_text = {
+          enabled = true,
+          source = "if_many",
+          prefix = "●",
+          spacing = 4,
+        },
+        signs = {
+          enabled = true,
+          priority = 20,
+        },
+        underline = {
+          enabled = true,
+          severity = vim.diagnostic.severity.ERROR,
+        },
+        update_in_insert = false,
+        severity_sort = true,
+        float = {
+          enabled = true,
+          focusable = false,
+          style = "minimal",
+          border = "rounded",
+          source = "always",
+          header = "",
+          prefix = "",
+        },
+      })
+
       -- Diagnostic signs
       local signs = {
         Error = ' ',
@@ -145,6 +256,10 @@ return {
         local hl = 'DiagnosticSign' .. type
         vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
       end
+
+      -- Add diagnostic keymaps
+      vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show diagnostic error messages' })
+      vim.keymap.set('n', '<leader>dq', vim.diagnostic.setloclist, { desc = 'Open diagnostic quickfix list' })
     end,
   },
 }

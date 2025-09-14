@@ -27,7 +27,7 @@ map('v', '<', '<gv', opts)
 map('v', '>', '>gv', opts)
 
 -- Move text up and down
-map('n', '<C-Down>', ':resize +2<CR>', opts)
+map('v', '<A-j>', ':move \'>+1<CR>gv=gv', opts)
 map('v', '<A-k>', ':move \'<-2<CR>gv=gv', opts)
 map('n', '<A-j>', ':move .+1<CR>==', opts)
 map('n', '<A-k>', ':move .-2<CR>==', opts)
@@ -37,7 +37,7 @@ map('n', '<leader>nh', ':noh<CR>', opts)
 
 -- Save and quit
 map('n', '<leader>w', ':w<CR>', opts)
-map('n', '<leader>q', ':q<CR>', opts)
+map('n', '<leader>x', ':q<CR>', opts)
 map('n', '<leader>Q', ':qa!<CR>', opts)
 
 -- Telescope
@@ -66,17 +66,10 @@ map('n', '<leader>cm', ':CodeCompanionActions<CR>', opts)
 map('n', '<leader>pp', ':ParrotChatNew<CR>', opts)
 map('v', '<leader>pr', ':ParrotRewrite<CR>', opts)
 
--- LSP keymaps
-map('n', 'gd', vim.lsp.buf.definition, opts)
-map('n', 'gD', vim.lsp.buf.declaration, opts)
-map('n', 'gi', vim.lsp.buf.implementation, opts)
-map('n', 'gr', vim.lsp.buf.references, opts)
-map('n', 'K', vim.lsp.buf.hover, opts)
-map('n', '<leader>rn', vim.lsp.buf.rename, opts)
-map('n', '<leader>ca', vim.lsp.buf.code_action, opts)
-map('n', '[d', vim.diagnostic.goto_prev, opts)
-map('n', ']d', vim.diagnostic.goto_next, opts)
-map('n', '<leader>d', vim.diagnostic.open_float, opts)
+-- LSP and Diagnostic keymaps (managed in lsp.lua)
+-- gd, gD, gi, gr, K, <leader>rn, <leader>ca - defined in LSP on_attach
+-- [d, ]d - diagnostic navigation (defined in LSP config)
+-- <leader>de - diagnostic float, <leader>dq - diagnostic quickfix
 
 -- Formatting
 map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, opts)

@@ -99,6 +99,8 @@ K               Show hover documentation
 <S-h>           Previous buffer
 <Space>bd       Delete buffer
 <Space>ba       Delete all buffers except current
+<Space>bn       Next buffer (Bufferline)
+<Space>bp       Previous buffer (Bufferline)
 
 <C-h>           Move to left window
 <C-j>           Move to down window
@@ -128,6 +130,12 @@ n               Next search result
 N               Previous search result
 *               Search word under cursor forward
 #               Search word under cursor backward
+```
+
+### Utilities
+```bash
+<Space>tp       Toggle autopairs on/off
+<M-e>           Fast wrap (autopairs) - wrap selection with brackets/quotes
 ```
 
 ## 🎨 Neo-tree File Explorer Commands
@@ -392,10 +400,10 @@ i" a"           <Space>fg        K (hover)
 i( a( i) a)     <Space>e         <Space>rn
 i{ a{ i} a}     <Space>o         <Space>ca
 
-BUFFERS          WINDOWS          LSP
+BUFFERS          WINDOWS          DIAGNOSTICS
 <S-h> <S-l>     <C-h> <C-j>      [d ]d
-<Space>bd       <C-k> <C-l>      <Space>d
-<Space>fb       <C-Up/Down>      <Space>lf
+<Space>bd       <C-k> <C-l>      <Space>de
+<Space>fb       <C-Up/Down>      <Space>dq
 ```
 
 Your AI-powered Neovim setup is ready to make you unstoppable! 🚀✨

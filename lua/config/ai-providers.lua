@@ -8,41 +8,60 @@ local security = require("config.security")
 local MODELS = {
   claude = "claude-sonnet-4-20250514",
   openai = "gpt-5-2025-08-07",
-  gemini = "gemini-2.5-flash",
+  gemini = "gemini-2.5-pro",
   perplexity = "sonar-pro",
 }
 
 -- Avante.nvim configuration
 function M.get_avante_config()
   return {
-    mode = "legacy",
+    -- mode = "legacy",
     provider = "openai",
+
+    acp_providers = {
+      ["claude-code"] = {
+        command = "npx",
+        args = { "@zed-industries/claude-code-acp" },
+        env = {
+          NODE_NO_WARNINGS = "1",
+          ANTHROPIC_API_KEY = vim.fn.getenv("ANTHROPIC_API_KEY"),
+        },
+      },
+    },
 
     providers = {
       openai = {
-        provider = "gpt-5", -- Use GPT-5 for best cost-performance balance
-        api_key = "YOUR_OPENAI_API_KEY",
+        model = MODELS.openai, -- Use GPT-5 for best cost-performance balance
+        api_key = "OPENAI_API_KEY",
         extra_request_body = {
-          max_tokens = 2048, -- Limit max tokens
-          temperature = 0,   -- Lower temp for focused answers
+          max_completion_tokens = 8192,
+          temperature = 1, -- Lower temp for focused answers
         },
       },
       anthropic = {
-        provider = "claude-sonnet-4",
-        api_key = "YOUR_CLAUDE_API_KEY",
+        endpoint = "https://api.anthropic.com/v1/messages",
+        model = MODELS.claude,
+        api_key = "ANTROPIC_API_KEY",
         extra_request_body = {
           max_tokens = 2048,
           temperature = 0.5,
         },
       },
-      google = {
-        provider = "gemini-2.5-pro",
-        api_key = "YOUR_GOOGLE_API_KEY",
+      google_ai = {
+        __inherited_from = "openai",
+        endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent",
+        model = MODELS.gemini,
+        api_key = vim.fn.getenv("GEMINI_API_KEY"),
         extra_request_body = {
           max_tokens = 2048,
           temperature = 0.5,
         },
       }
+    },
+
+    web_search_engine = {
+      provider = "brave", -- tavily, serpapi, google, kagi, brave, or searxng
+      proxy = nil,        -- proxy support, e.g., http://127.0.0.1:7890
     },
 
     behaviour = {
@@ -66,8 +85,8 @@ function M.get_avante_config()
     },
 
     suggestion = {
-      debounce = 1200, -- Increase debounce delay to reduce request frequency
-      throttle = 1200, -- Increase throttle time to reduce request frequency
+      debounce = 200, -- Increase debounce delay to reduce request frequency
+      throttle = 200, -- Increase throttle time to reduce request frequency
     },
 
     prompt_logger = {
@@ -133,8 +152,8 @@ end
 function M.get_codecompanion_config()
   return {
     strategies = {
-      chat = { adapter = "anthropic" },
-      inline = { adapter = "anthropic" },
+      chat = { adapter = "openai" },
+      inline = { adapter = "openai" },
     },
 
     adapters = {
@@ -155,7 +174,7 @@ function M.get_codecompanion_config()
           schema = {
             model = {
               default = MODELS.openai,
-              choices = { MODELS.openai, "gpt-4o", "gpt-4o-mini" }
+              choices = { MODELS.openai, "gpt-5-mini", "gpt-4o", "gpt-4o-mini" }
             }
           },
         })

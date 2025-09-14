@@ -50,22 +50,22 @@ return {
         },
         git_status = {
           symbols = {
-            added = '',
-            modified = '',
-            deleted = '✖',
-            renamed = '',
-            untracked = '',
-            ignored = '',
-            unstaged = '',
-            staged = '',
-            conflict = '',
+            added = '',
+            modified = '',
+            deleted = '',
+            renamed = '󰁕',
+            untracked = '',
+            ignored = '',
+            unstaged = '󰄱',
+            staged = '',
+            conflict = '',
           },
         },
       },
 
       window = {
         position = 'left',
-        width = 40,
+        width = 60,
         auto_expand_width = true,
         mapping_options = {
           noremap = true,
@@ -118,7 +118,6 @@ return {
           hide_gitignored = true,
           hide_hidden = true,
           hide_by_name = {
-            'node_modules',
             '.git',
             '.DS_Store',
             'thumbs.db',
@@ -128,7 +127,7 @@ return {
             '*/src/*/tsconfig.json',
           },
           always_show = {
-            '.gitignored',
+            '.gitignore',
           },
           never_show = {
             '.DS_Store',
