@@ -54,7 +54,7 @@ return {
 
       local on_attach = function(client, bufnr)
         -- Enable native LSP completion for Neovim 0.11+
-        if client.supports_method('textDocument/completion') then
+        if client:supports_method('textDocument/completion') then
          vim.lsp.completion.enable(true, client.id, bufnr, { autotrigger = false })
         end
 
@@ -90,7 +90,7 @@ return {
         end, { desc = 'Organize imports', buffer = bufnr })
 
         -- Auto-organize imports and add missing imports on save
-        if client.supports_method('textDocument/codeAction') then
+        if client:supports_method('textDocument/codeAction') then
           vim.api.nvim_create_autocmd('BufWritePre', {
             group = vim.api.nvim_create_augroup('AutoImports', { clear = true }),
             buffer = bufnr,
@@ -119,7 +119,7 @@ return {
         end
 
         -- Format on save
-        if client.supports_method('textDocument/formatting') then
+        if client:supports_method('textDocument/formatting') then
           vim.api.nvim_create_autocmd('BufWritePre', {
             group = vim.api.nvim_create_augroup('LspFormat', { clear = true }),
             buffer = bufnr,
@@ -227,6 +227,12 @@ return {
         signs = {
           enabled = true,
           priority = 20,
+          text = {
+            [vim.diagnostic.severity.ERROR] = ' ',
+            [vim.diagnostic.severity.WARN] = ' ',
+            [vim.diagnostic.severity.HINT] = ' ',
+            [vim.diagnostic.severity.INFO] = ' ',
+          },
         },
         underline = {
           enabled = true,
@@ -244,18 +250,6 @@ return {
           prefix = "",
         },
       })
-
-      -- Diagnostic signs
-      local signs = {
-        Error = ' ',
-        Warn = ' ',
-        Hint = ' ',
-        Info = ' ',
-      }
-      for type, icon in pairs(signs) do
-        local hl = 'DiagnosticSign' .. type
-        vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
-      end
 
       -- Add diagnostic keymaps
       vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show diagnostic error messages' })

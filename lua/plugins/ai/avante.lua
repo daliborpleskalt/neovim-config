@@ -7,7 +7,7 @@ return {
   cmd = { "AvanteAsk", "AvanteEdit", "AvanteChat", "AvanteToggle" },
   keys = {
     { "<leader>aa", "<cmd>AvanteAsk<cr>",    desc = "Avante Ask" },
-    { "<leader>ae", "<cmd>AvanteEdit<cr>",   mode = "v",            desc = "Avante Edit" },
+    { "<leader>ae", "<cmd>AvanteEdit<cr>",   mode = "v", desc = "Avante Edit" },
     { "<leader>ac", "<cmd>AvanteChat<cr>",   desc = "Avante Chat" },
     { "<leader>at", "<cmd>AvanteToggle<cr>", desc = "Avante Toggle" },
   },
