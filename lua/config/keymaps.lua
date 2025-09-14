@@ -19,8 +19,8 @@ map('n', '<C-Right>', ':vertical resize +2<CR>', opts)
 -- Buffer navigation
 map('n', '<S-l>', ':bnext<CR>', opts)
 map('n', '<S-h>', ':bprevious<CR>', opts)
-map('n', '<leader>bd', ':bdelete<CR>', opts)
-map('n', '<leader>ba', ':%bdelete|edit #|normal `"<CR>', opts)
+map('n', '<leader>bd', ':bdelete<CR>', { noremap = true, silent = true, nowait = true })
+map('n', '<leader>ba', ':%bdelete|edit #|normal `"<CR>', { noremap = true, silent = true, nowait = true })
 
 -- Better indenting
 map('v', '<', '<gv', opts)
@@ -33,7 +33,7 @@ map('n', '<A-j>', ':move .+1<CR>==', opts)
 map('n', '<A-k>', ':move .-2<CR>==', opts)
 
 -- Clear search highlighting
-map('n', '<leader>nh', ':noh<CR>', opts)
+map('n', '<leader>nh', ':noh<CR>', { noremap = true, silent = true, nowait = true })
 
 -- Save and quit
 map('n', '<leader>w', ':w<CR>', opts)
@@ -53,18 +53,18 @@ map('n', '<leader>e', ':Neotree toggle<CR>', opts)
 map('n', '<leader>o', ':Neotree focus<CR>', opts)
 
 -- AI Keymaps
-map('n', '<leader>aa', ':AvanteAsk<CR>', opts)
+map('n', '<leader>aa', ':AvanteAsk<CR>', { noremap = true, silent = true, nowait = true })
 map('v', '<leader>ar', ':AvanteRefactor<CR>', opts)
-map('n', '<leader>ac', ':AvanteChat<CR>', opts)
+map('n', '<leader>ac', ':AvanteChat<CR>', { noremap = true, silent = true, nowait = true })
 map('v', '<leader>ae', ':AvanteExplain<CR>', opts)
 map('v', '<leader>ao', ':AvanteOptimize<CR>', opts)
 
-map('n', '<leader>cc', ':CodeCompanionChat<CR>', opts)
-map('v', '<leader>ce', ':CodeCompanionEdit<CR>', opts)
-map('n', '<leader>cm', ':CodeCompanionActions<CR>', opts)
+map('n', '<leader>cc', ':CodeCompanionChat<CR>', { noremap = true, silent = true, nowait = true })
+map('v', '<leader>ce', ':CodeCompanionEdit<CR>', { noremap = true, silent = true, nowait = true })
+map('n', '<leader>cm', ':CodeCompanionActions<CR>', { noremap = true, silent = true, nowait = true })
 
-map('n', '<leader>pp', ':ParrotChatNew<CR>', opts)
-map('v', '<leader>pr', ':ParrotRewrite<CR>', opts)
+map('n', '<leader>pp', ':ParrotChatNew<CR>', { noremap = true, silent = true, nowait = true })
+map('v', '<leader>pr', ':ParrotRewrite<CR>', { noremap = true, silent = true, nowait = true })
 
 -- LSP and Diagnostic keymaps (managed in lsp.lua)
 -- gd, gD, gi, gr, K, <leader>rn, <leader>ca - defined in LSP on_attach
@@ -73,6 +73,16 @@ map('v', '<leader>pr', ':ParrotRewrite<CR>', opts)
 
 -- Formatting
 map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, opts)
+
+-- Harpoon keymaps (individual actions handled in harpoon.lua config)
+-- <leader>h prefix for all harpoon operations:
+--   ha - Add current file to harpoon
+--   hh - Toggle harpoon menu
+--   h1-h4 - Navigate to marked file 1-4
+--   hn/hp - Next/Previous marked file
+--   hc - Clear harpoon list
+--   hr - Remove current file from harpoon
+--   ht - Telescope harpoon marks (if available)
 
 -- Gitsigns keymaps (individual hunk actions handled in gitsigns.lua on_attach)
 -- Navigation: ]h, [h - Next/Previous hunk

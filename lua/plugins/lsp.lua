@@ -60,6 +60,7 @@ return {
 
           -- Enhanced keymaps for auto imports
         local opts = { buffer = bufnr, silent = true }
+        local opts_nowait = { buffer = bufnr, silent = true, nowait = true }
         
         -- Existing keymaps
         vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
@@ -68,7 +69,7 @@ return {
         vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
         
         -- Auto import keymaps
-        vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts)
+        vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action, opts_nowait)
         vim.keymap.set('n', '<leader>ai', function()
           vim.lsp.buf.code_action({
             apply = true,
@@ -77,7 +78,7 @@ return {
               diagnostics = {}
             }
           })
-        end, { desc = 'Add missing imports', buffer = bufnr })
+        end, { desc = 'Add missing imports', buffer = bufnr, nowait = true })
         
         vim.keymap.set('n', '<leader>oi', function()
           vim.lsp.buf.code_action({
@@ -87,7 +88,7 @@ return {
               diagnostics = {}
             }
           })
-        end, { desc = 'Organize imports', buffer = bufnr })
+        end, { desc = 'Organize imports', buffer = bufnr, nowait = true })
 
         -- Auto-organize imports and add missing imports on save
         if client:supports_method('textDocument/codeAction') then
@@ -252,8 +253,8 @@ return {
       })
 
       -- Add diagnostic keymaps
-      vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show diagnostic error messages' })
-      vim.keymap.set('n', '<leader>dq', vim.diagnostic.setloclist, { desc = 'Open diagnostic quickfix list' })
+      vim.keymap.set('n', '<leader>de', vim.diagnostic.open_float, { desc = 'Show diagnostic error messages', nowait = true })
+      vim.keymap.set('n', '<leader>dq', vim.diagnostic.setloclist, { desc = 'Open diagnostic quickfix list', nowait = true })
     end,
   },
 }
