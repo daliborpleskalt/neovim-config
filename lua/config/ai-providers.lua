@@ -66,8 +66,8 @@ function M.get_avante_config()
 
     behaviour = {
       auto_suggestions = false,                 -- Disable auto-suggestions to lower token usage
-      enable_token_counting = true,             -- Enable token counting for monitoring
       auto_apply_diff_after_generation = false, -- Prefer manual application of generated code
+      support_paste_from_clipboard = false,     -- Disable clipboard integration that might cause conflicts
     },
 
     dual_boost = {
@@ -135,7 +135,9 @@ function M.get_avante_config()
       },
     },
 
-    hints = { enabled = true },
+    hints = { 
+      enabled = false -- Disable hints to prevent tooltip duplication
+    },
     highlights = {
       diff = {
         current = "DiffText",
