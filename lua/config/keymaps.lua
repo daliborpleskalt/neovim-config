@@ -83,3 +83,14 @@ map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, opts
 --   hc - Clear harpoon list
 --   hr - Remove current file from harpoon
 --   ht - Telescope harpoon marks (if available)
+
+-- Gitsigns keymaps (individual hunk actions handled in gitsigns.lua on_attach)
+-- Navigation: ]h, [h - Next/Previous hunk
+-- Actions: <leader>g prefix
+--   gs/gr - Stage/Reset hunk (visual mode supported)
+--   gS/gR - Stage/Reset buffer  
+--   gu - Undo stage hunk
+--   gp - Preview hunk
+--   gb - Blame line, gB - Toggle line blame
+--   gd - Diff this, gD - Diff this ~
+-- Text object: ih - Select hunk
