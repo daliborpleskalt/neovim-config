@@ -34,6 +34,7 @@ return {
             text = 'File Explorer',
             highlight = 'Directory',
             text_align = 'left',
+            separator = true,
           }
         },
         show_buffer_icons = true, -- disable filetype icons for buffers
@@ -56,5 +57,31 @@ return {
     local map = vim.keymap.set
     map('n', '<leader>bn', ':BufferLineCycleNext<CR>', { desc = 'Bufferline next buffer' })
     map('n', '<leader>bp', ':BufferLineCyclePrev<CR>', { desc = 'Bufferline previous buffer' })
+
+    -- Ensure neo-tree stays on the left when buffers are switched
+    local augroup = vim.api.nvim_create_augroup('NeotreePosition', { clear = true })
+    vim.api.nvim_create_autocmd('BufEnter', {
+      group = augroup,
+      callback = function()
+        -- Small delay to ensure window positioning is stable
+        vim.defer_fn(function()
+          local neo_tree_wins = vim.tbl_filter(function(win)
+            local buf = vim.api.nvim_win_get_buf(win)
+            local ok, ft = pcall(vim.api.nvim_buf_get_option, buf, 'filetype')
+            return ok and ft == 'neo-tree'
+          end, vim.api.nvim_list_wins())
+          
+          if #neo_tree_wins > 0 then
+            local neo_win = neo_tree_wins[1]
+            local win_pos = vim.api.nvim_win_get_position(neo_win)
+            -- If neo-tree is not at the leftmost position, move it
+            if win_pos[2] > 0 then
+              vim.api.nvim_set_current_win(neo_win)
+              vim.cmd('wincmd H')
+            end
+          end
+        end, 10)
+      end,
+    })
   end,
 }

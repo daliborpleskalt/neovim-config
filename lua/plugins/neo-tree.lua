@@ -15,6 +15,7 @@ return {
       popup_border_style = 'rounded',
       enable_git_status = true,
       enable_diagnostics = true,
+      retain_hidden_root_indent = false,
 
       default_component_configs = {
         container = {
@@ -66,7 +67,9 @@ return {
       window = {
         position = 'left',
         width = 60,
-        auto_expand_width = true,
+        auto_expand_width = false,
+        same_level = false,
+        insert_as = 'child',
         mapping_options = {
           noremap = true,
           nowait = true,
